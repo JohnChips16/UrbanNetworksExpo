@@ -1,0 +1,90 @@
+In this code, i want to make sure that if one form or more a value is inputted, considered as one of the body to send to api endpoint, and make sute that empty value is not sent as body. Next, fix the response to send, if i was inputting degree and specialization then the response would be an object like 
+{
+ degree: defree,
+ specialization: specialization
+}
+Also make thr content type application/json.
+
+
+  const handleSubmit = async () => {
+  try {
+    const token = await AsyncStorage.getItem('token');
+    const formData = new FormData();
+    formData.append('id', id);
+    formData.append('schoolOrUniversity', schoolOrUniversity);
+    formData.append('degree', degree);
+    formData.append('specialization', specialization);
+    formData.append('startYear', startYear);
+    formData.append('graduatedYear', graduatedYear);
+
+    const response = await fetch(`http://localhost:9000/v1/users/edit/attachment?operation=${operation}&id=${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    console.log(formData)
+    closeModal();
+  } catch (error) {
+    console.error('Error:', error);
+  }
+};
+
+  return (
+    <View>
+      <TouchableOpacity onPress={openModal}>
+        <Text>Edit</Text>
+      </TouchableOpacity>
+    <Modal visible={isOpen} animationType="slide">
+  <View>
+    <TouchableOpacity onPress={closeModal}>
+      <Text>Close</Text>
+    </TouchableOpacity>
+    <TextInput
+      value={id}
+      onChangeText={setId}
+      placeholder="ID"
+    />
+    {operation === 'Ed' && (
+      <>
+        <TextInput
+          value={schoolOrUniversity}
+          onChangeText={setSchoolOrUniversity}
+          placeholder="School/University"
+        />
+        <TextInput
+          value={degree}
+          onChangeText={setDegree}
+          placeholder="Degree"
+        />
+        <TextInput
+          value={specialization}
+          onChangeText={setSpecialization}
+          placeholder="Specialization"
+        />
+        <TextInput
+          value={startYear}
+          onChangeText={setStartYear}
+          placeholder="Start Year"
+        />
+        <TextInput
+          value={graduatedYear}
+          onChangeText={setGraduatedYear}
+          placeholder="Graduated Year"
+        />
+      </>
+    )}
+    <Button title="Save" onPress={handleSubmit} />
+  </View>
+</Modal>
+    </View>
+  );
+};
+
+Previous one i logged the body and it was something that it shouldnt be, an array objects
