@@ -2,7 +2,33 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, Linking, FlatList } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+
 const FeedJob = () => {
+  const navigation = useNavigation();
+
+  const renderRelativeDate = (date) => {
+    const currentDate = new Date();
+    const postDate = new Date(date);
+    const timeDifference = currentDate.getTime() - postDate.getTime();
+    const secondsDifference = Math.floor(timeDifference / 1000);
+
+    // Define time intervals in seconds
+    const minute = 60;
+    const hour = minute * 60;
+    const day = hour * 24;
+    const month = day * 30;
+    const year = day * 365;
+
+    return (
+      secondsDifference < minute ? 'just now' :
+      secondsDifference < hour ? `${Math.floor(secondsDifference / minute)} ${Math.floor(secondsDifference / minute) === 1 ? 'minute' : 'minutes'} ago` :
+      secondsDifference < day ? `${Math.floor(secondsDifference / hour)} ${Math.floor(secondsDifference / hour) === 1 ? 'hour' : 'hours'} ago` :
+      secondsDifference < month ? `${Math.floor(secondsDifference / day)} ${Math.floor(secondsDifference / day) === 1 ? 'day' : 'days'} ago` :
+      secondsDifference < year ? `${Math.floor(secondsDifference / month)} ${Math.floor(secondsDifference / month) === 1 ? 'month' : 'months'} ago` :
+      `${Math.floor(secondsDifference / year)} ${Math.floor(secondsDifference / year) === 1 ? 'year' : 'years'} ago`
+    );
+  };
   const [jobs, setJobs] = useState([]);
   const [jobsloc, setJobsloc] = useState([]);
   const [jobsskill, setJobskill] = useState([]);
@@ -119,21 +145,29 @@ const fetchJobsLinkedinSkill = async () => {
           <Text style={{ marginTop: 0, alignSelf: 'flex-start', marginLeft:0, paddingBottom:10 }}>Suggested jobs</Text>
                
     <View style={{padding:0.5, backgroundColor:'#eee',}}></View>
+    
         <Text style={styles.title}>{item.title ? item.title : 'No data'}</Text>
+               <Text style={{paddingBottom:10, color:'#777'}}>{renderRelativeDate(item.datePosted)}</Text>
         <View style={styles.authorInfo}>
+        <Text>Offered by </Text>
           <Text style={styles.authorName}>{item.author?.schoolOrUniversityName}</Text>
-          <Text style={styles.authorUsername}>@{item.author?.username}</Text>
-  
+          <Text style={styles.authorUsername}>{item.author?.username}</Text>
+
         </View>
-                <Text style={styles.datePosted}>{item.datePosted}</Text>
-        <Text style={styles.description}>{item.caption ? item.caption : 'No data'}</Text>
+                   <Text style={{paddingBottom:10}}>{item.location ? item.location : ''}, {item.typeofJob ? item.typeofJob : ''}</Text>
+           
+      
+        
+           
+  
     <View style={{padding:0.5, backgroundColor:'#eee'}}></View>
         <Text style={styles.hashtags}>{item.hashtags ? item.hashtags : 'No data'}</Text>
-        <Text style={styles.skillReq}>Skills required: {item.skillReq ? item.skillReq.join(', ') : 'No data'}</Text>
-        <Text style={styles.employeeInfo}>{item.numEmployee} employee(s)</Text>
-        <TouchableOpacity onPress={() => handleApply(item.urlApply)} style={styles.applyButton}>
-          <Text style={styles.applyButtonText}>Apply</Text>
+
+             
+        <TouchableOpacity style={styles.applyButton}>
+          <Text style={styles.applyButtonText}>APPLY JOB</Text>
         </TouchableOpacity>
+     
       </View>
     );
   };
@@ -247,11 +281,11 @@ const styles = StyleSheet.create({
   authorName: {
     fontWeight: 'bold',
     marginRight: 5,
-    color:'blue'
+    color:'#777'
   },
   authorUsername: {
     marginRight: 5,
-    color:'blue'
+    color:'#777'
   },
   datePosted: {
     color: '#777',
@@ -270,7 +304,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   applyButton: {
-    backgroundColor: 'blue',
+    backgroundColor: '#3b5998',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,

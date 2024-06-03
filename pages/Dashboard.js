@@ -12,6 +12,9 @@ import Profile from './Profile';
 import { Entypo, Feather, Ionicons } from '@expo/vector-icons';
 import EditProfile from './EditProfile';
 import PostPage from './PostPage'
+import Catch from './Catch'
+import JobPage from './JobPage'
+import { FontAwesome } from '@expo/vector-icons';
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
@@ -34,6 +37,18 @@ const DashboardWithTabs = () => {
             tabBarIcon: ({ color, size }) => (
                  <View style={{marginTop:10}}>
               <Ionicons name="home" size={size} color="#262626" />
+              </View>
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="Catch"
+          component={CatchStack}
+          options={{
+            tabBarLabel: '', // Set tabBarLabel to an empty string
+            tabBarIcon: ({ color, size }) => (
+                 <View style={{marginTop:10}}>
+        <FontAwesome name="feed" size={size} color="#262626"  />
               </View>
             ),
           }}
@@ -139,6 +154,23 @@ const HomeStack = ({ navigation }) => {
     headerTitle: 'Post', // Customize the header title
   }}
 />
+      <Stack.Screen
+  name="JobPage"
+  component={JobPage}
+  options={{
+    headerShown: true,
+    headerStyle: {
+      backgroundColor: '#fff',
+      borderBottomWidth: 1,
+    },
+    headerTitleStyle: {
+      color: 'black',
+      fontWeight: 'normal',
+      fontSize: 22,
+    },
+    headerTitle: 'Job', // Customize the header title
+  }}
+/>
  <Stack.Screen
   name="Search"
   component={Search}
@@ -236,6 +268,31 @@ const ProfileStack = ({ navigation }) => {
     headerTitle: 'Post', // Customize the header title
   }}
 />
+    </Stack.Navigator>
+  );
+};
+
+const CatchStack = ({ navigation }) => {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="Catch"
+        component={Catch}
+        options={{
+          headerShown: true,
+          headerStyle: {
+            backgroundColor: 'white',
+          },
+          headerTitle: () => (
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 0 }}>
+              <Text style={{ fontWeight: 'bold', fontSize: 22, marginRight: 30 }}>Catch </Text>
+           
+              
+            </View>
+          ),
+        }}
+      />
+      
     </Stack.Navigator>
   );
 };

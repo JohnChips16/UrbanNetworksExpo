@@ -6,7 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import FeedJob from './FeedJob'
 import FeedPost from './FeedPost'
 import Connections from './UiConn'
-const Home = ({scrollToTopRef}) => {
+const Network = ({scrollToTopRef}) => {
   const [name, setName] = useState('');
   const [about, setAbout] = useState('');
   const [email, setEmail] = useState('');
@@ -229,14 +229,17 @@ const handleScroll = (event) => {
         <View style={{ flex: 1, justifyContent: 'center' }}>
           <Text style={{ fontWeight: 'bold', fontSize: 17 }}>{item.fullname || item.user.fullname}</Text>
           <Text style={{ fontWeight: 'normal', fontSize: 14, color:'#777' }}>{item.username || item.user.username}</Text>
-        </View>
-           <TouchableOpacity
-      style={{ backgroundColor: '#262626', padding: 10, borderRadius: 5, justifyContent: 'center' }}
+          <Text style={{ fontWeight: 'normal', fontSize: 14, color:'black' }}>{item.about || item.user.about}</Text>
+          <Text style={{ fontWeight: 'normal', fontSize: 14, color:'#777' }}>{item.location || item.user.location}</Text>
+              <TouchableOpacity
+      style={{ backgroundColor: '#262626', padding: 10, borderRadius: 5, justifyContent: 'center', marginTop:10 }}
       onPress={() => navigation.navigate('Profiler', { profileparam: item.user.username })}
     >
     
-          <Text style={{ color: 'white' , fontWeight:'bold'}}>VISIT PROFILE</Text>
+          <Text style={{ color: 'white' , fontWeight:'bold', textAlign:'center'}}>VISIT PROFILE</Text>
         </TouchableOpacity>
+        </View>
+       
       </View>
     )}
     keyExtractor={(item, index) => index.toString()}
@@ -250,8 +253,7 @@ const handleScroll = (event) => {
          
          </View>
  
-      <FeedJob/>
-      <FeedPost/>
+      
     </ScrollView>
        {!isAtTop && (
         <TouchableOpacity style={styles.floatingButton} onPress={scrollToTop}>
@@ -371,4 +373,4 @@ const styles = StyleSheet.create({
 
 
 
-export default Home;
+export default Network;

@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, Button, Image, Alert } from 'react-native'; // Import Alert
+import { View, TextInput, Button, Image, Alert, Platform } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Progress from 'react-native-progress';
 
 const NewPost = () => {
   const [caption, setCaption] = useState('');
   const [image, setImage] = useState(null);
   const [token, setToken] = useState('');
+  const [uploading, setUploading] = useState(false);
+  const [progress, setProgress] = useState(0);
 
   useEffect(() => {
     getToken();
@@ -37,7 +40,7 @@ const NewPost = () => {
         aspect: [4, 3],
         quality: 1,
       });
-console.log(result)
+
       if (!result.cancelled) {
         setImage(result.assets[0].uri);
       } else {
@@ -60,6 +63,9 @@ console.log(result)
         formData.append('image', { uri: localUri, name: filename, type });
       }
 
+      setUploading(true);
+      setProgress(0);
+
       const response = await fetch('http://localhost:9000/v1/users/post', {
         method: 'POST',
         headers: {
@@ -67,22 +73,29 @@ console.log(result)
           Authorization: `Bearer ${token}`,
         },
         body: formData,
+        onUploadProgress: (event) => {
+          const progress = event.loaded / event.total;
+          setProgress(progress);
+        }
       });
 
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
 
+      setUploading(false);
+      setProgress(1);
+
       // If successful, display an alert
       Alert.alert('Success', 'Post submitted successfully');
-
     } catch (error) {
       console.error('Error submitting post:', error);
+      setUploading(false);
     }
   };
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, padding: 20 }}>
       <TextInput
         style={{
           marginBottom: 20,
@@ -124,6 +137,11 @@ console.log(result)
           />
         </View>
       </View>
+      {uploading && (
+        <View style={{ marginTop: 20 }}>
+          <Progress.Bar progress={progress} width={null} />
+        </View>
+      )}
     </View>
   );
 };
