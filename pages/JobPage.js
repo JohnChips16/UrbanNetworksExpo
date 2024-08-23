@@ -65,6 +65,7 @@ const fetchComment = async () => {
         const responseData = await res.json();
         const data = responseData || {}; // Ensure data is an object
         setPost(data);
+        console.log(data)
       } catch (err) {
         console.error(err.message);
       }
@@ -107,16 +108,17 @@ const fetchComment = async () => {
            
         </View>
         
-              <Text>Job requirement : {item.jobReq ? item.jobReq : ''}</Text>
-              <Text>Job type : {item.typeofJob ? item.typeofJob : ''}</Text>
-              <Text>Employees : {item.numEmployee ? item.numEmployee : ''}</Text>
+              <Text style={{fontWeight:'bold'}}>Job requirement : {item.jobReq ? item.jobReq : ''}</Text>
+              <Text style={{fontWeight:'bold'}}>Job type : {item.typeofJob ? item.typeofJob : ''}</Text>
+              <Text style={{fontWeight:'bold'}}>Employees : {item.numEmployee ? item.numEmployee : ''}</Text>
                  <Text style={styles.skillReq}>Skills required: {item.skillReq ? item.skillReq.join(', ') : 'No data'}</Text>
            <Text style={{paddingBottom:10}}>Compare your profile</Text>
   
     <View style={{padding:0.5, backgroundColor:'#eee'}}></View>
         <Text style={styles.hashtags}>{item.hashtags ? item.hashtags : 'No data'}</Text>
 
-              <Text style={styles.description}>Description about the job : {item.caption ? item.caption : 'No data'}</Text>
+              <Text style={styles.description}> {item.caption ? item.caption : 'No data'}</Text>
+              <Text style={styles.description}>Description about the job : {item.aboutJob ? item.aboutJob : 'No data'}</Text>
         
         <TouchableOpacity style={styles.applyButton}>
           <Text style={styles.applyButtonText}>APPLY JOB</Text>
@@ -279,7 +281,8 @@ const styles = StyleSheet.create({
   hashtags: {
     marginBottom: 10,
     fontWeight: 'bold',
-    color: 'blue'
+    color: 'blue',
+    marginTop:10
   },
   skillReq: {
     marginBottom: 10,

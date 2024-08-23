@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, Linking, FlatList, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, Linking, FlatList, ActivityIndicator, ScrollView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
-const FeedArticle = () => {
+const ArticlePage = () => {
   const navigation = useNavigation();
+  const route = useRoute();
+  const { articleId } = route.params;
 
-  const [article, setArticle] = useState([])
+  const [article, setArticle] = useState({})
   const [articleLoc, setArticleLoc] = useState([])
-  const [articleFeed, setArticleFeed] = useState([])
-  
   
 
 const renderRelativeDate = (date) => {
@@ -51,28 +51,14 @@ const renderRelativeDate = (date) => {
    const fetchAllNews = async () => {
     try {
       const token = await AsyncStorage.getItem('token');
-      const res = await fetch("http://localhost:9000/v1/users/school/news/fetch/all", {
+      const res = await fetch(`http://localhost:9000/v1/users/school/news/${articleId}`, {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` }
       });
       const responseData = await res.json();
-      const data = responseData.data || [];
+      const data = responseData || {};
       setArticle(data);
-    } catch (err) {
-      console.error(err.message);
-    }
-  };
-  
-   const fetchFeedNews = async () => {
-    try {
-      const token = await AsyncStorage.getItem('token');
-      const res = await fetch("http://localhost:9000/v1/users/school/news/feed/0", {
-        method: "GET",
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      const responseData = await res.json();
-      const data = responseData || [];
-      setArticleFeed(data);
+      console.log(data)
     } catch (err) {
       console.error(err.message);
     }
@@ -94,28 +80,22 @@ const fetchAllNewsLoc = async () => {
   };
   useEffect(() => {
     fetchAllNews();
-    fetchAllNewsLoc();
-    fetchFeedNews()
+    
   }, []);
   
 
 const renderItem = ({ item }) => {
   const renderHashtags = () => {
   if (item.hashtags && item.hashtags.length > 0) {
-    return item.hashtags.map((hashtag, index) => (
-      <TouchableOpacity
-        key={index}
-        onPress={() => navigation.navigate("TagArticle", { articleTag: hashtag })}
-        style={styles.hashtagButton}
-      >
-        <Text style={styles.hashtagText}>{hashtag}</Text>
-      </TouchableOpacity>
-    ));
+    return (
+      <Text style={styles.hashtags}>{item.hashtags.join(', ')}</Text>
+    );
   } else {
-    return null;
+    return (
+      null
+    );
   }
 };
-
   const renderCaption = () => {
     if (item.attachment) {
       return (
@@ -167,9 +147,7 @@ const renderItem = ({ item }) => {
       <Text style={styles.authorUsername}>Posted {renderRelativeDate(item.datePosted)}</Text>
       {renderHashtags()}
       <View style={{ padding: 0.5, backgroundColor: '#eee' }}></View>
-       <TouchableOpacity onPress={() => navigation.navigate("ArticlePage", { articleId: item._id })} style={styles.applyButton}>
-        <Text style={styles.applyButtonText}>VIEW ARTICLE</Text>
-      </TouchableOpacity>
+   
     </View>
   );
 };
@@ -177,34 +155,22 @@ const renderItem = ({ item }) => {
   
   return (
  <View style={styles.container}>
-      {articleFeed.length === 0 ? (
-        null
+    <ScrollView>
+      {Object.keys(article).length === 0 ? (
+        <View>
+          <Text style={{ marginTop: 70 }}>Loading...</Text>
+        </View>
       ) : (
         <FlatList
-          data={articleFeed}
+          data={[article]} 
           keyExtractor={(item, index) => index.toString()}
-          renderItem={renderItem}
+          renderItem={({ item }) => renderItem({ item })}
         />
       )}
-      {article.length === 0 ? (
-        null
-      ) : (
-        <FlatList
-          data={article}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={renderItem}
-        />
-      )}
-      {articleLoc.length === 0 ? (
-        null
-      ) : (
-        <FlatList
-          data={articleLoc}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={renderItem}
-        />
-      )}
-    </View>
+    
+ 
+    </ScrollView>
+  </View>
     )
 }
 
@@ -302,4 +268,4 @@ const styles = StyleSheet.create({
 });
 
 
-export default FeedArticle;
+export default ArticlePage;

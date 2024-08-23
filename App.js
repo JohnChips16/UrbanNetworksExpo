@@ -52,9 +52,11 @@ export default function App() {
           <Stack.Screen
             name='Dashboard'
             component={DashboardWithTabs}
-            options={{ title: 'URBAN NETWORKS', headerTitleAlign: 'center', headerStyle:{
+            options={{ 
+            headerShown:false,
+            title: 'URBANNETWORKS', headerTitleAlign: 'center', headerStyle:{
               borderBottomWidth:1,
-              borderBottomColor:'lightgrey',
+              borderBottomColor:'grey',
               backgroundColor:"#fff"
             },
             headerTitleStyle:{

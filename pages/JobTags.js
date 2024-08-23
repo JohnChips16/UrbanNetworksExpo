@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, Linking, FlatList } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, Linking, FlatList, ScrollView} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
-const FeedJob = () => {
+
+
+const JobTags = () => {
   const navigation = useNavigation();
+const route = useRoute();
+  const { JobTag } = route.params;
 
   const renderRelativeDate = (date) => {
     const currentDate = new Date();
@@ -30,23 +34,24 @@ const FeedJob = () => {
     );
   };
   const [jobs, setJobs] = useState([]);
+  const [count, setCount] = useState("");
   const [jobsFeed, setJobsFeed] = useState([]);
   const [jobsloc, setJobsloc] = useState([]);
   const [jobsskill, setJobskill] = useState([]);
   const [jobscred, setJobscred] = useState({});
   const [Linkedin, setJobsLinkedin] = useState([])
   const [LinkedinSkill, setLinkedinSkill] = useState([])
-  const [LinkedinLoc, setLinkedinLoc] = useState([])
   const fetchAllJobs = async () => {
     try {
       const token = await AsyncStorage.getItem('token');
-      const res = await fetch("http://localhost:9000/v1/users/school/job/fetch/all", {
+      const res = await fetch(`http://localhost:9000/v1/users/school/job/hashtag/${JobTag}/`, {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` }
       });
       const responseData = await res.json();
-      const data = responseData.data || [];
+      const data = responseData.posts || [];
       setJobs(data);
+      setCount(responseData.count)
     } catch (err) {
       console.error(err.message);
     }
@@ -128,7 +133,6 @@ const fetchJobsLinkedin = async () => {
     }
   };
 
-
 const fetchJobsLinkedinSkill = async () => {
     try {
       const token = await AsyncStorage.getItem('token');
@@ -144,31 +148,9 @@ const fetchJobsLinkedinSkill = async () => {
     }
   };
 
-
-const fetchJobsLinkedinLoc = async () => {
-    try {
-      const token = await AsyncStorage.getItem('token');
-      const res = await fetch("http://localhost:9000/v1/users/linkedin/jobs/alg/byloc", {
-        method: "GET",
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      const responseData = await res.json();
-      const data = responseData || [];
-      setLinkedinLoc(data);
-    } catch (err) {
-      console.error(err.message);
-    }
-  };
-
   useEffect(() => {
     fetchAllJobs();
-    fetchLocobs()
-    fetchSkilljobs()
-    fetchJobsLinkedinSkill()
-    fetchJobsLinkedin()
-    fetchJobscred()
-    fetchFeedJobs()
-    fetchJobsLinkedinLoc()
+    
   }, []);
 
   const handleApply = (urlApply) => {
@@ -176,22 +158,6 @@ const fetchJobsLinkedinLoc = async () => {
   };
 
   const renderJobItem = ({ item }) => {
-     const renderHashtags = () => {
-  if (item.hashtags && item.hashtags.length > 0) {
-    return item.hashtags.map((hashtag, index) => (
-      <TouchableOpacity
-        key={index}
-        onPress={() => navigation.navigate("JobTags", { JobTag: hashtag })}
-        style={styles.hashtagButton}
-      >
-        <Text style={{fontWeight:'bold', color:'blue'}}>{hashtag}</Text>
-      </TouchableOpacity>
-    ));
-  } else {
-    return null;
-  }
-};
-
     return (
       <View style={styles.jobItem}>
           <Text style={{ marginTop: 0, alignSelf: 'flex-start', marginLeft:0, paddingBottom:10 }}>Suggested jobs</Text>
@@ -199,7 +165,6 @@ const fetchJobsLinkedinLoc = async () => {
     <View style={{padding:0.5, backgroundColor:'#eee',}}></View>
     
         <Text style={styles.title}>{item.title ? item.title : 'No data'}</Text>
-        {renderHashtags()}
                <Text style={{paddingBottom:10, color:'#777'}}>{renderRelativeDate(item.datePosted)}</Text>
         <View style={styles.authorInfo}>
         <Text>Offered by </Text>
@@ -248,15 +213,8 @@ const renderJobItemLinked = ({ item }) => {
 
   return (
     <View style={styles.container}>
-      {jobsFeed.length === 0 ? (
-     null
-      ) : (
-        <FlatList
-          data={jobsFeed}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={renderJobItem}
-        />
-      )}
+    <Text style={{padding:10, marginLeft:15}}>found {count} jobs</Text>
+    <ScrollView>
       {jobs.length === 0 ? (
      null
       ) : (
@@ -266,61 +224,7 @@ const renderJobItemLinked = ({ item }) => {
           renderItem={renderJobItem}
         />
       )}
-       {jobsloc.length === 0 ? (
-     null
-      ) : (
-        <FlatList
-          data={jobsloc}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={renderJobItem}
-        />
-      )}
-       {jobsskill.length === 0 ? (
-     null
-      ) : (
-        <FlatList
-          data={jobsskill}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={renderJobItem}
-        />
-      )}
-       {jobscred.length === 0 ? (
-     null
-      ) : (
-        <FlatList
-          data={jobscred}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={renderJobItem}
-        />
-      )}
-       {LinkedinLoc.length === 0 ? (
-     null
-      ) : (
-        <FlatList
-          data={LinkedinLoc}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={renderJobItemLinked}
-        />
-      )}
-        {LinkedinSkill.length === 0 ? (
-     null
-      ) : (
-        <FlatList
-          data={LinkedinSkill}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={renderJobItemLinked}
-        />
-      )}
-       {Linkedin.length === 0 ? (
-     null
-      ) : (
-        <FlatList
-          data={Linkedin}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={renderJobItemLinked}
-        />
-      )}
-      
+       </ScrollView>
     </View>
   );
 };
@@ -337,7 +241,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 0,
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: '#eee',
   },
   title: {
     fontSize: 18,
@@ -387,4 +291,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default FeedJob;
+export default JobTags;

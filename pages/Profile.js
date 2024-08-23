@@ -65,7 +65,7 @@ const fetchProfile = async () => {
       </View>
       <View style={{ padding: 7, backgroundColor: '#ddd' }}></View>
       <Text style={styles.aboutText}>
-      <AntDesign name="infocirlce" size={24} color="black" />
+  
       <Text style={styles.boldText}>About this user </Text></Text>
       <View style={{ padding: 0.5, backgroundColor: '#ddd' }}></View>
       <Text style={styles.aboutText}>{profile.about}</Text>
@@ -77,7 +77,7 @@ const fetchProfile = async () => {
 
   const renderEducation = ({ item }) => {
     return (
-      <View style={{ padding: 10, borderBottomWidth: 1, borderColor: '#ccc', backgroundColor: '#eee' }}>
+      <View style={{ padding: 10, borderBottomWidth: 1, borderColor: '#ccc', backgroundColor: '#fff' }}>
      <Text>
   <Text style={styles.boldText}>studying </Text>
   <Text style={styles.boldText}>{item.degree}</Text>
@@ -92,7 +92,7 @@ const fetchProfile = async () => {
 
     const renderAwards = ({ item }) => {
   return (
-    <View style={{ padding: 10, borderBottomWidth: 1, borderColor: '#ccc', backgroundColor: '#eee' }}>
+    <View style={{ padding: 10, borderBottomWidth: 1, borderColor: '#ccc', backgroundColor: '#fff' }}>
       <Text><Text style={styles.boldText}>Awarded with {item.title}</Text>, associated with <Text style={styles.boldText}>{item.associatedWith}</Text> at <Text style={styles.blueText}>{item.date}</Text></Text>
       <Text>Description: {item.desc}</Text>
     </View>
@@ -101,7 +101,7 @@ const fetchProfile = async () => {
 
 const renderCertificates = ({ item }) => {
   return (
-    <View style={{ padding: 10, borderBottomWidth: 1, borderColor: '#ccc', backgroundColor: '#eee' }}>
+    <View style={{ padding: 10, borderBottomWidth: 1, borderColor: '#ccc', backgroundColor: '#fff' }}>
       <Text><Text style={styles.boldText}>{item.CertName} </Text></Text>
       <Text>Authority: {item.CertAuthority}</Text>
       <Text>License Number: {item.LicenseNum}</Text>
@@ -113,7 +113,7 @@ const renderCertificates = ({ item }) => {
 
 const renderProjects = ({ item }) => {
   return (
-    <View style={{ padding: 10, borderBottomWidth: 1, borderColor: '#ccc', backgroundColor: '#eee' }}>
+    <View style={{ padding: 10, borderBottomWidth: 1, borderColor: '#ccc', backgroundColor: '#fff' }}>
       <Text><Text style={styles.boldText}>{item.projectName}</Text></Text>
       <Text>Associated with: {item.associateWith}</Text>
       <Text>Date: {item.dateNow} - {item.dateThen}</Text>
@@ -125,7 +125,7 @@ const renderProjects = ({ item }) => {
 
 const renderPublications = ({ item }) => {
   return (
-    <View style={{ padding: 10, borderBottomWidth: 1, borderColor: '#ccc', backgroundColor: '#eee' }}>
+    <View style={{ padding: 10, borderBottomWidth: 1, borderColor: '#ccc', backgroundColor: '#fff' }}>
       <Text><Text style={styles.boldText}>{item.title}</Text></Text>
       <Text>Authors: {item.authors.join(', ')}</Text>
       <Text>Publisher: {item.publisher}</Text>
@@ -138,7 +138,7 @@ const renderPublications = ({ item }) => {
 
 const renderOrganizations = ({ item }) => {
   return (
-    <View style={{ padding: 10, borderBottomWidth: 1, borderColor: '#ccc', backgroundColor: '#eee' }}>
+    <View style={{ padding: 10, borderBottomWidth: 1, borderColor: '#ccc', backgroundColor: '#fff' }}>
       <Text><Text style={styles.boldText}>{item.orgName}</Text></Text>
       <Text>Position: {item.positionHeld}</Text>
       <Text>Date: {item.dateFrom} - {item.dateThen}</Text>
@@ -149,7 +149,7 @@ const renderOrganizations = ({ item }) => {
 
 const renderLanguages = ({ item }) => {
   return (
-    <View style={{ padding: 10, borderBottomWidth: 1, borderColor: '#ccc', backgroundColor: '#eee' }}>
+    <View style={{ padding: 10, borderBottomWidth: 1, borderColor: '#ccc', backgroundColor: '#fff' }}>
       
       <Text> {item.proficiency} in {item.language}</Text>
     </View>
@@ -158,7 +158,7 @@ const renderLanguages = ({ item }) => {
 
 const renderExternals = ({ item }) => {
   return (
-    <View style={{ padding: 10, borderBottomWidth: 1, borderColor: '#ccc', backgroundColor: '#eee' }}>
+    <View style={{ padding: 10, borderBottomWidth: 1, borderColor: '#ccc', backgroundColor: '#fff' }}>
       <Text>Description: {item.description}</Text>
       <Text>Attachment URL: {item.attachment}</Text>
     </View>
@@ -167,7 +167,7 @@ const renderExternals = ({ item }) => {
 
 const renderSkills = ({ item }) => {
   return (
-    <View style={{ padding: 10, borderBottomWidth: 1, borderColor: '#ccc', backgroundColor: '#eee' }}>
+    <View style={{ padding: 10, borderBottomWidth: 1, borderColor: '#ccc', backgroundColor: '#fff' }}>
       <Text><Text style={styles.boldText}>{item.skill}</Text></Text>
       <Text>{item.description}</Text>
     </View>
@@ -176,7 +176,7 @@ const renderSkills = ({ item }) => {
 
 const renderScores = ({ item }) => {
   return (
-    <View style={{ padding: 10, borderBottomWidth: 1, borderColor: '#ccc', backgroundColor: '#eee' }}>
+    <View style={{ padding: 10, borderBottomWidth: 1, borderColor: '#ccc', backgroundColor: '#fff' }}>
       <Text>{item.testName}</Text>
       <Text>Associated with: {item.associatedWith}</Text>
       <Text>Score: {item.score}</Text>
@@ -207,8 +207,8 @@ const onRefresh = async () => {
     ) : (
       <>
         {renderProfile()}
-        <HorizontalCarouselWithItems data={ovpost} style={{paddingTop:20, paddingBottom:20, marginTop:20}} />
-        <Text style={styles.aboutText}><Ionicons name="school" size={27} color="black" style={{paddingRight:10, marginTop:10}}/> <Text style={styles.boldText}>Education </Text></Text>
+    
+        <Text style={styles.aboutText}> <Text style={styles.boldText}>Education </Text></Text>
         <View style={{ padding: 0.5, backgroundColor: '#ddd' }}></View>
         {attach.ed && attach.ed.length > 0 && (
           <FlatList
@@ -219,7 +219,7 @@ const onRefresh = async () => {
         )}
         {attach.awrd && attach.awrd.length > 0 && (
           <>
-            <Text style={styles.aboutText}><Entypo name="flag" size={24} color="black" />  <Text style={styles.boldText}>Awards </Text></Text>
+            <Text style={styles.aboutText}>  <Text style={styles.boldText}>Awards </Text></Text>
             <View style={{ padding: 0.5, backgroundColor: '#ddd' }}></View>
             <FlatList
               data={attach.awrd}
@@ -230,7 +230,7 @@ const onRefresh = async () => {
         )}
         {attach.cert && attach.cert.length > 0 && (
           <>
-            <Text style={styles.aboutText}><Entypo name="flag" size={24} color="black" />  <Text style={styles.boldText}>Certification </Text></Text>
+            <Text style={styles.aboutText}>  <Text style={styles.boldText}>Certification </Text></Text>
             <View style={{ padding: 0.5, backgroundColor: '#ddd' }}></View>
             <FlatList
               data={attach.cert}
@@ -241,7 +241,7 @@ const onRefresh = async () => {
         )}
         {attach.proj && attach.proj.length > 0 && (
           <>
-            <Text style={styles.aboutText}><Entypo name="flag" size={24} color="black" />  <Text style={styles.boldText}>Projects </Text></Text>
+            <Text style={styles.aboutText}>  <Text style={styles.boldText}>Projects </Text></Text>
             <View style={{ padding: 0.5, backgroundColor: '#ddd' }}></View>
             <FlatList
               data={attach.proj}
@@ -252,7 +252,7 @@ const onRefresh = async () => {
         )}
         {attach.pub && attach.pub.length > 0 && (
           <>
-            <Text style={styles.aboutText}><Entypo name="flag" size={24} color="black" />  <Text style={styles.boldText}>Publications </Text></Text>
+            <Text style={styles.aboutText}>  <Text style={styles.boldText}>Publications </Text></Text>
             <View style={{ padding: 0.5, backgroundColor: '#ddd' }}></View>
             <FlatList
               data={attach.pub}
@@ -263,7 +263,7 @@ const onRefresh = async () => {
         )}
         {attach.org && attach.org.length > 0 && (
           <>
-            <Text style={styles.aboutText}><Entypo name="flag" size={24} color="black" />  <Text style={styles.boldText}>Organizations </Text></Text>
+            <Text style={styles.aboutText}>  <Text style={styles.boldText}>Organizations </Text></Text>
             <View style={{ padding: 0.5, backgroundColor: '#ddd' }}></View>
             <FlatList
               data={attach.org}
@@ -274,7 +274,7 @@ const onRefresh = async () => {
         )}
         {attach.lang && attach.lang.length > 0 && (
           <>
-            <Text style={styles.aboutText}><Entypo name="flag" size={24} color="black" />  <Text style={styles.boldText}>Languages </Text></Text>
+            <Text style={styles.aboutText}>  <Text style={styles.boldText}>Languages </Text></Text>
             <View style={{ padding: 0.5, backgroundColor: '#ddd' }}></View>
             <FlatList
               data={attach.lang}
@@ -285,7 +285,7 @@ const onRefresh = async () => {
         )}
         {attach.score && attach.score.length > 0 && (
           <>
-            <Text style={styles.aboutText}><Entypo name="flag" size={24} color="black" />  <Text style={styles.boldText}>Tests </Text></Text>
+            <Text style={styles.aboutText}>  <Text style={styles.boldText}>Tests </Text></Text>
             <View style={{ padding: 0.5, backgroundColor: '#ddd' }}></View>
             <FlatList
               data={attach.score}
@@ -296,7 +296,7 @@ const onRefresh = async () => {
         )}
         {attach.external && attach.external.length > 0 && (
           <>
-            <Text style={styles.aboutText}><Entypo name="flag" size={24} color="black" />  <Text style={styles.boldText}>Externals </Text></Text>
+            <Text style={styles.aboutText}>  <Text style={styles.boldText}>Externals </Text></Text>
             <View style={{ padding: 0.5, backgroundColor: '#ddd' }}></View>
             <FlatList
               data={attach.external}
@@ -307,7 +307,7 @@ const onRefresh = async () => {
         )}
         {attach.skill && attach.skill.length > 0 && (
           <>
-            <Text style={styles.aboutText}><Entypo name="flag" size={24} color="black" />  <Text style={styles.boldText}>Skills </Text></Text>
+            <Text style={styles.aboutText}>  <Text style={styles.boldText}>Skills </Text></Text>
             <View style={{ padding: 0.5, backgroundColor: '#ddd' }}></View>
             <FlatList
               data={attach.skill}

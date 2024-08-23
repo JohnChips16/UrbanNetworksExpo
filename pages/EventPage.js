@@ -1,18 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, Linking, FlatList, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, Linking, FlatList, ActivityIndicator, ScrollView } from 'react-native';
+import FeedArticle from './FeedArticle'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
 
-const FeedArticle = () => {
-  const navigation = useNavigation();
-
-  const [article, setArticle] = useState([])
-  const [articleLoc, setArticleLoc] = useState([])
-  const [articleFeed, setArticleFeed] = useState([])
-  
-  
-
+const EventPage = ({route}) => {
+   const [post, setPost] = useState({})
+  const [postloc, setPostloc] = useState([])
+  const [postSkill, setPostkill] = useState([])
+  const { postId } = route.params;
+   
 const renderRelativeDate = (date) => {
   const currentDate = new Date();
   const postDate = new Date(date);
@@ -48,78 +45,79 @@ const renderRelativeDate = (date) => {
   
   
   
-   const fetchAllNews = async () => {
+  const fetchAllPost = async () => {
     try {
       const token = await AsyncStorage.getItem('token');
-      const res = await fetch("http://localhost:9000/v1/users/school/news/fetch/all", {
+      const res = await fetch(`http://localhost:9000/v1/users/school/event/${postId}`, {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` }
       });
       const responseData = await res.json();
-      const data = responseData.data || [];
-      setArticle(data);
+      const data = responseData || {}
+      setPost(data);
+      console.log(data)
     } catch (err) {
       console.error(err.message);
     }
   };
   
-   const fetchFeedNews = async () => {
+   const fetchLocPost = async () => {
     try {
       const token = await AsyncStorage.getItem('token');
-      const res = await fetch("http://localhost:9000/v1/users/school/news/feed/0", {
-        method: "GET",
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      const responseData = await res.json();
-      const data = responseData || [];
-      setArticleFeed(data);
-    } catch (err) {
-      console.error(err.message);
-    }
-  };
-
-const fetchAllNewsLoc = async () => {
-    try {
-      const token = await AsyncStorage.getItem('token');
-      const res = await fetch("http://localhost:9000/v1/users/school/news/q/matchby/loc", {
+      const res = await fetch("http://localhost:9000/v1/users/school/event/q/matchby/loc", {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` }
       });
       const responseData = await res.json();
       const data = responseData.data || [];
-      setArticleLoc(data);
+      setPostloc(data);
     } catch (err) {
       console.error(err.message);
     }
   };
+  
+  const fetchKillPost = async () => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+      const res = await fetch("http://localhost:9000/v1/users/school/event/q/matchby/skills", {
+        method: "GET",
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const responseData = await res.json();
+      const data = responseData.data || [];
+      setPostkill(data);
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
+  
   useEffect(() => {
-    fetchAllNews();
-    fetchAllNewsLoc();
-    fetchFeedNews()
+    fetchAllPost();
+    
   }, []);
   
+   const handleApply = (urlApply) => {
+    Linking.openURL(urlApply);
+  };
 
-const renderItem = ({ item }) => {
+
+  
+const renderJobItemLinked = ({ item }) => {
   const renderHashtags = () => {
   if (item.hashtags && item.hashtags.length > 0) {
-    return item.hashtags.map((hashtag, index) => (
-      <TouchableOpacity
-        key={index}
-        onPress={() => navigation.navigate("TagArticle", { articleTag: hashtag })}
-        style={styles.hashtagButton}
-      >
-        <Text style={styles.hashtagText}>{hashtag}</Text>
-      </TouchableOpacity>
-    ));
+    return (
+      <Text style={styles.hashtags}>{item.hashtags.join(', ')}</Text>
+    );
   } else {
-    return null;
+    return (
+      null
+    );
   }
 };
-
   const renderCaption = () => {
     if (item.attachment) {
       return (
-       null
+        <Text style={[styles.description, { marginBottom: 10 }]}>{item.caption ? item.caption : 'No data'}</Text>
       );
     } else {
       // Calculate font size dynamically based on caption length
@@ -155,8 +153,14 @@ const renderItem = ({ item }) => {
       </View>
      
       <View style={{ padding: 0.5, backgroundColor: '#eee' }}></View>
-      <Text style={{fontWeight:'bold', fontSize:16, marginTop:10}}>{item.title}</Text>
+      <Text style={{fontSize:18, fontWeight:'bold', marginTop:10}}>{item.title}</Text>
       {renderCaption()}
+        <Text style={styles.authorUsername}>
+        {item.eventDate}</Text>
+        <Text style={styles.authorUsername}>
+       at {item.eventHour}</Text>
+          <Text style={styles.authorUsername}>
+        at {item.locationOrPlatform}</Text>
       {item.attachment && (
         <Image
           source={{ uri: item.attachment }}
@@ -164,50 +168,42 @@ const renderItem = ({ item }) => {
           resizeMode="cover"
         />
       )}
-      <Text style={styles.authorUsername}>Posted {renderRelativeDate(item.datePosted)}</Text>
+      
       {renderHashtags()}
       <View style={{ padding: 0.5, backgroundColor: '#eee' }}></View>
-       <TouchableOpacity onPress={() => navigation.navigate("ArticlePage", { articleId: item._id })} style={styles.applyButton}>
-        <Text style={styles.applyButtonText}>VIEW ARTICLE</Text>
+{/*
+      <TouchableOpacity onPress={() => navigation.navigate("EventPage", { postId: item._id })} style={styles.applyButton}>
+        <Text style={styles.applyButtonText}>VIEW EVENT</Text>
       </TouchableOpacity>
+      */}
     </View>
   );
 };
 
-  
+
+
+
+  {/*i wanted yo arrange the fetching sequences but i dont have any data in location & skill yet.*/}
   return (
- <View style={styles.container}>
-      {articleFeed.length === 0 ? (
-        null
+     <View style={styles.container}>
+    <ScrollView>
+      {Object.keys(post).length === 0 ? (
+        <View>
+          <Text style={{ marginTop: 70 }}>Loading...</Text>
+        </View>
       ) : (
         <FlatList
-          data={articleFeed}
+          data={[post]} 
           keyExtractor={(item, index) => index.toString()}
-          renderItem={renderItem}
+          renderItem={({ item }) => renderJobItemLinked({ item })}
         />
       )}
-      {article.length === 0 ? (
-        null
-      ) : (
-        <FlatList
-          data={article}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={renderItem}
-        />
-      )}
-      {articleLoc.length === 0 ? (
-        null
-      ) : (
-        <FlatList
-          data={articleLoc}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={renderItem}
-        />
-      )}
-    </View>
+    
+ 
+    </ScrollView>
+  </View>
     )
 }
-
 
 
 const styles = StyleSheet.create({
@@ -302,4 +298,4 @@ const styles = StyleSheet.create({
 });
 
 
-export default FeedArticle;
+export default EventPage

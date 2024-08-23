@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, Linking, FlatList, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, Linking, FlatList, ActivityIndicator, ScrollView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
-const FeedArticle = () => {
+
+const TagArticle = () => {
   const navigation = useNavigation();
+const route = useRoute();
+  const { articleTag } = route.params;
 
   const [article, setArticle] = useState([])
   const [articleLoc, setArticleLoc] = useState([])
@@ -51,12 +54,12 @@ const renderRelativeDate = (date) => {
    const fetchAllNews = async () => {
     try {
       const token = await AsyncStorage.getItem('token');
-      const res = await fetch("http://localhost:9000/v1/users/school/news/fetch/all", {
+      const res = await fetch(`http://localhost:9000/v1/users/school/news/hashtag/${articleTag}/`, {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` }
       });
       const responseData = await res.json();
-      const data = responseData.data || [];
+      const data = responseData.posts || [];
       setArticle(data);
     } catch (err) {
       console.error(err.message);
@@ -71,7 +74,7 @@ const renderRelativeDate = (date) => {
         headers: { Authorization: `Bearer ${token}` }
       });
       const responseData = await res.json();
-      const data = responseData || [];
+      const data = responseData.data || [];
       setArticleFeed(data);
     } catch (err) {
       console.error(err.message);
@@ -94,28 +97,22 @@ const fetchAllNewsLoc = async () => {
   };
   useEffect(() => {
     fetchAllNews();
-    fetchAllNewsLoc();
-    fetchFeedNews()
+    
   }, []);
   
 
 const renderItem = ({ item }) => {
   const renderHashtags = () => {
   if (item.hashtags && item.hashtags.length > 0) {
-    return item.hashtags.map((hashtag, index) => (
-      <TouchableOpacity
-        key={index}
-        onPress={() => navigation.navigate("TagArticle", { articleTag: hashtag })}
-        style={styles.hashtagButton}
-      >
-        <Text style={styles.hashtagText}>{hashtag}</Text>
-      </TouchableOpacity>
-    ));
+    return (
+      <Text style={styles.hashtags}>{item.hashtags.join(', ')}</Text>
+    );
   } else {
-    return null;
+    return (
+      null
+    );
   }
 };
-
   const renderCaption = () => {
     if (item.attachment) {
       return (
@@ -177,15 +174,7 @@ const renderItem = ({ item }) => {
   
   return (
  <View style={styles.container}>
-      {articleFeed.length === 0 ? (
-        null
-      ) : (
-        <FlatList
-          data={articleFeed}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={renderItem}
-        />
-      )}
+      <ScrollView>
       {article.length === 0 ? (
         null
       ) : (
@@ -195,15 +184,7 @@ const renderItem = ({ item }) => {
           renderItem={renderItem}
         />
       )}
-      {articleLoc.length === 0 ? (
-        null
-      ) : (
-        <FlatList
-          data={articleLoc}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={renderItem}
-        />
-      )}
+     </ScrollView>
     </View>
     )
 }
@@ -302,4 +283,4 @@ const styles = StyleSheet.create({
 });
 
 
-export default FeedArticle;
+export default TagArticle;

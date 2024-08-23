@@ -1,18 +1,25 @@
+
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, Linking, FlatList, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, Linking, FlatList, ActivityIndicator, ScrollView } from 'react-native';
 import FeedArticle from './FeedArticle'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
-const EventFeed = () => {
-   const [post, setPost] = useState([])
-   const [postFeed, setPostFeed] = useState([])
+import FeedNews from './FeedNews'
+import EventFeed from './EventFeed'
+const PostTag = () => {
+  const navigation = useNavigation();
+  const route = useRoute();
+const { TagName } = route.params;
+
+  const [post, setPost] = useState([])
   const [postloc, setPostloc] = useState([])
   const [postSkill, setPostkill] = useState([])
-  const navigation = useNavigation();
-
-   
+  const [postSuggest, setPostsuggest] = useState([])
+  const [postfeed, setPostFeed] = useState([])
+  const [avatar, setAvatar] = useState("")
+  const [postCount, setPostCount] = useState("")
 const renderRelativeDate = (date) => {
   const currentDate = new Date();
   const postDate = new Date(date);
@@ -47,41 +54,30 @@ const renderRelativeDate = (date) => {
 };
   
   
-  
-  const fetchAllPost = async () => {
+   const fetchAllPost = async () => {
     try {
       const token = await AsyncStorage.getItem('token');
-      const res = await fetch("http://localhost:9000/v1/users/school/event/fetch/all", {
+      const res = await fetch(`http://localhost:9000/v1/users/www/tag/${TagName}`, {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` }
       });
       const responseData = await res.json();
-      const data = responseData.data || [];
+      const data = responseData.posts || [];
       setPost(data);
+      setPostCount(responseData.count)
+      setAvatar(data.author.avatarPic)
     } catch (err) {
       console.error(err.message);
     }
   };
-  
-  const fetchFeedPost = async () => {
-    try {
-      const token = await AsyncStorage.getItem('token');
-      const res = await fetch("http://localhost:9000/v1/users/school/event/feed/0", {
-        method: "GET",
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      const responseData = await res.json();
-      const data = responseData || [];
-      setPostFeed(data);
-    } catch (err) {
-      console.error(err.message);
-    }
+  const handleAvatarError = () => {
+    setAvatar('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSYGrDPNl3oSaMEXAT1EmmWlIINRWUvW22u_4vDbWA4RrIVeioZY1Dz88_l&s=10');
   };
-  
+
    const fetchLocPost = async () => {
     try {
       const token = await AsyncStorage.getItem('token');
-      const res = await fetch("http://localhost:9000/v1/users/school/event/q/matchby/loc", {
+      const res = await fetch("http://localhost:9000/v1/users/school/post/q/matchby/loc", {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -96,7 +92,7 @@ const renderRelativeDate = (date) => {
   const fetchKillPost = async () => {
     try {
       const token = await AsyncStorage.getItem('token');
-      const res = await fetch("http://localhost:9000/v1/users/school/event/q/matchby/skills", {
+      const res = await fetch("http://localhost:9000/v1/users/school/post/q/matchby/skills", {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -107,35 +103,63 @@ const renderRelativeDate = (date) => {
       console.error(err.message);
     }
   };
+
+ const fetchSuggestPost = async () => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+      const res = await fetch("http://localhost:9000/v1/users/school/suggested/post/0", {
+        method: "GET",
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const responseData = await res.json();
+      const data = responseData || [];
+      setPostsuggest(data);
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
   
+  const fetchfeedpost = async () => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+      const res = await fetch("http://localhost:9000/v1/users/post/feed/0", {
+        method: "GET",
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const responseData = await res.json();
+      const data = responseData || [];
+      setPostFeed(data);
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
+
   useEffect(() => {
     fetchAllPost();
-    fetchLocPost();
-    fetchKillPost();
-    fetchFeedPost()
-  }, []);
   
-   const handleApply = (urlApply) => {
+  }, []);
+
+  const handleApply = (urlApply) => {
     Linking.openURL(urlApply);
   };
 
-
-const renderJobItemLinked = ({ item }) => {
+const renderJobItemLinked = ({ item, navigation }) => {
   const renderHashtags = () => {
-  if (item.hashtags && item.hashtags.length > 0) {
-    return (
-      <Text style={styles.hashtags}>{item.hashtags.join(', ')}</Text>
-    );
-  } else {
-    return (
-      null
-    );
-  }
-};
+    if (item.hashtags && item.hashtags.length > 0) {
+      return (
+        <Text style={styles.hashtags}>{item.hashtags.join(', ')}</Text>
+      );
+    } else {
+      return null;
+    }
+  };
+
   const renderCaption = () => {
     if (item.attachment) {
       return (
-        <Text style={[styles.description, { marginBottom: 10 }]}>{item.caption ? item.caption : 'No data'}</Text>
+        <Text style={[styles.description, { marginBottom: 10 }]}>
+          {item.caption ? item.caption : 'No data'}
+        </Text>
       );
     } else {
       // Calculate font size dynamically based on caption length
@@ -144,7 +168,9 @@ const renderJobItemLinked = ({ item }) => {
         fontSize = 14;
       }
       return (
-        <Text style={[styles.description, { marginBottom: 10, fontSize: fontSize }]}>{item.caption ? item.caption : 'No data'}</Text>
+        <Text style={[styles.description, { marginBottom: 10, fontSize: fontSize }]}>
+          {item.caption ? item.caption : 'No data'}
+        </Text>
       );
     }
   };
@@ -153,32 +179,32 @@ const renderJobItemLinked = ({ item }) => {
     <View style={styles.jobItem}>
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         {/* Conditional rendering for author's avatar */}
-       {item.author && item.author.avatarPic ? (
-  <Image
-    source={{ uri: item.author.avatarPic }}
-    style={styles.avatar}
-    resizeMode="cover"
-  />
-) : (
-  <Ionicons name="person-circle-sharp" size={30} color="blue" style={{ marginRight: 10, marginBottom: 10 }} />
-)}
-        <View style={{display:'flex', flexDirection:'column'}}>
+        {item.author && item.author.avatarPic ? (
+          <Image
+            source={{ uri: item.author.avatarPic }}
+            style={styles.avatar}
+            resizeMode="cover"
+          />
+        ) : (
+          <Ionicons name="person-circle-sharp" size={30} color="blue" style={{ marginRight: 10, marginBottom: 10 }} />
+        )}
+        <View style={{ display: 'flex', flexDirection: 'column' }}>
+        <View style={{display:'flex', flexDirection:'row'}}>
           <Text style={{ marginTop: 5, alignSelf: 'flex-start', marginLeft: 0, paddingBottom: 2, fontWeight: 'bold' }}>
-  {item.author && (item.author.fullname || item.author.schoolOrUniversityName)}
-</Text>
-         <Text style={styles.description0}>{item.author && item.author.about ? item.author.about : 'No data'}</Text>
+            {item.author && (item.author.fullname || item.author.schoolOrUniversityName)}
+          </Text>
+       <Text style={{ marginTop: 5, marginLeft: 5, color: '#bbb' }}>@{item.author && item.author.username ? item.author.username : 'urbaners'}</Text>
+          </View>
+          <Text style={styles.description0}>
+            {item.author && item.author.about ? item.author.about : 'No data'}
+          </Text>
+            <Text style={styles.authorUsername}>Posted {renderRelativeDate(item.date)}</Text>
         </View>
       </View>
-     
+
       <View style={{ padding: 0.5, backgroundColor: '#eee' }}></View>
-      <Text style={{fontSize:18, fontWeight:'bold', marginTop:10}}>{item.title}</Text>
       {renderCaption()}
-        <Text style={styles.authorUsername}>
-        {item.eventDate}</Text>
-        <Text style={styles.authorUsername}>
-       at {item.eventHour}</Text>
-          <Text style={styles.authorUsername}>
-        at {item.locationOrPlatform}</Text>
+       {renderHashtags()}
       {item.attachment && (
         <Image
           source={{ uri: item.attachment }}
@@ -186,61 +212,41 @@ const renderJobItemLinked = ({ item }) => {
           resizeMode="cover"
         />
       )}
-      
-      {renderHashtags()}
+    
+     
       <View style={{ padding: 0.5, backgroundColor: '#eee' }}></View>
-      
-      <TouchableOpacity onPress={() => navigation.navigate("EventPage", { postId: item._id })} style={styles.applyButton}>
-        <Text style={styles.applyButtonText}>VIEW EVENT</Text>
+  {/*
+    <TouchableOpacity onPress={() => navigation.navigate("PostPage", { postId: item._id })}>
+      <Text style={{marginTop:10}}>View Post</Text>
+    </TouchableOpacity>
+    */}
+         <TouchableOpacity onPress={() => navigation.navigate("PostPage", { postId: item._id })} style={styles.applyButton}>
+        <Text style={styles.applyButtonText}>VIEW POST</Text>
       </TouchableOpacity>
     </View>
   );
 };
 
-  {/*i wanted yo arrange the fetching sequences but i dont have any data in location & skill yet.*/}
+
   return (
     <View style={styles.container}>
-      {postFeed.length === 0 ? (
-     null
-      ) : (
-        <FlatList
-          data={postFeed}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={renderJobItemLinked}
-        />
-      )}
+      <ScrollView>
+     <Text style={{marginLeft:7, padding:15}}>Found {postCount} posts</Text>
+     
       {post.length === 0 ? (
-     null
+  null
       ) : (
         <FlatList
           data={post}
           keyExtractor={(item, index) => index.toString()}
-          renderItem={renderJobItemLinked}
-        />
-      )}
-      {postloc.length === 0 ? (
-      null
-      ) : (
-        <FlatList
-          data={postloc}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={renderJobItemLinked}
-        />
-      )}
-      {postSkill.length === 0 ? (
-        null
-      ) : (
-        <FlatList
-          data={postSkill}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={renderJobItemLinked}
+          renderItem={({ item }) => renderJobItemLinked({ item, navigation })}
         />
       )}
       
+      </ScrollView>
     </View>
-    )
-}
-
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -255,14 +261,15 @@ const styles = StyleSheet.create({
   avatar: {
     width: 40,
     height: 40,
-    borderRadius: 20,
+    borderRadius: 5,
     marginRight: 10,
-    marginBottom: 10,
+    marginBottom:45,
   },
   image: {
     width: '100%',
     height: 350,
     marginTop: 10,
+    borderRadius:7
   },
   jobItem: {
     marginBottom: 10,
@@ -291,7 +298,7 @@ const styles = StyleSheet.create({
   },
   authorUsername: {
     marginRight: 5,
-    color:'blue',
+    color:'#777',
     paddingBottom:7,
     paddingTop:7
   },
@@ -309,6 +316,8 @@ const styles = StyleSheet.create({
   },
   hashtags: {
     marginBottom: 10,
+    fontWeight:'bold',
+    color:'blue'
   },
   skillReq: {
     marginBottom: 10,
@@ -318,7 +327,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   applyButton: {
-    backgroundColor: '#eee',
+    backgroundColor: '#262626',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,
@@ -328,10 +337,9 @@ const styles = StyleSheet.create({
     marginTop:10
   },
   applyButtonText: {
-    color: 'black',
+    color: 'white',
     fontWeight: 'bold',
   },
 });
 
-
-export default EventFeed
+export default PostTag;

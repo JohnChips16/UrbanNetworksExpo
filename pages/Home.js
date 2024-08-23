@@ -195,6 +195,8 @@ const handleScroll = (event) => {
   return (
    <View style={{ flex: 1, backgroundColor:'rgb(248,248,248)' }}>
       <ScrollView
+      showsVerticalScrollIndicator={false}
+      showsHorizontalScrollIndicator={false}
         ref={scrollViewRef}
         contentContainerStyle={styles.container}
         refreshControl={
@@ -207,35 +209,31 @@ const handleScroll = (event) => {
         onScroll={handleScroll}
         scrollEventThrottle={16}
       >
-     
-  
-     {combinedData.length > 0 ? (
+ {combinedData.length > 0 ? (
   <FlatList
     data={combinedData}
     horizontal={false}
     renderItem={({ item }) => (
-      <View style={{ marginVertical: 5, backgroundColor: 'white', padding: 15, borderRadius: 5, flexDirection: 'row' }}>
+      <View style={{ backgroundColor: 'white', padding: 10, borderRadius: 5, flexDirection: 'row', borderBottomWidth: 1, borderBottomColor: '#ccc' }}>
         {item.avatarPic || (item.user && item.user.avatarPic) ? (
           <Image
             source={{ uri: item.avatarPic || item.user.avatarPic }}
-            style={{ width: 50, height: 50, borderRadius: 0, marginRight: 10 }}
+            style={{ width: 40, height: 40, borderRadius: 0, marginRight: 15 }}
           />
         ) : (
-          <View style={{ width: 50, height: 50, justifyContent: 'center', alignItems: 'center', marginRight: 10 }}>
-         <Ionicons name="person-add-sharp" size={50} color="#ccc" />
-        
+          <View style={{ width: 50, height: 50, justifyContent: 'center', alignItems: 'center', marginRight:0 }}>
+            <Ionicons name="person-add-sharp" size={30} color="#ccc" />
           </View>
         )}
         <View style={{ flex: 1, justifyContent: 'center' }}>
           <Text style={{ fontWeight: 'bold', fontSize: 17 }}>{item.fullname || item.user.fullname}</Text>
-          <Text style={{ fontWeight: 'normal', fontSize: 14, color:'#777' }}>{item.username || item.user.username}</Text>
+          <Text style={{ fontWeight: 'normal', fontSize: 14, color: '#777' }}>{item.username || item.user.username}</Text>
         </View>
-           <TouchableOpacity
-      style={{ backgroundColor: '#262626', padding: 10, borderRadius: 5, justifyContent: 'center' }}
-      onPress={() => navigation.navigate('Profiler', { profileparam: item.user.username })}
-    >
-    
-          <Text style={{ color: 'white' , fontWeight:'bold'}}>VISIT PROFILE</Text>
+        <TouchableOpacity
+          style={{ backgroundColor: '#fff', padding: 10, borderRadius: 5, justifyContent: 'center' }}
+          onPress={() => navigation.navigate('Profiler', { profileparam: item.user.username })}
+        >
+          <Text style={{ color: 'blue', fontWeight: 'bold' }}>VISIT PROFILE</Text>
         </TouchableOpacity>
       </View>
     )}

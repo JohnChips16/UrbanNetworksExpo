@@ -116,9 +116,7 @@ const renderRelativeDate = (date) => {
   return (
     <View style={styles.container}>
       {cnn.length === 0 ? (
-        <View style={styles.loadingContainer}>
-    <ActivityIndicator size="large" color="blue" />
-  </View>
+        null
       ) : (
         <FlatList
           data={cnn}

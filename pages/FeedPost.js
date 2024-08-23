@@ -146,14 +146,21 @@ const renderRelativeDate = (date) => {
 
 const renderJobItemLinked = ({ item, navigation }) => {
   const renderHashtags = () => {
-    if (item.hashtags && item.hashtags.length > 0) {
-      return (
-        <Text style={styles.hashtags}>{item.hashtags.join(', ')}</Text>
-      );
-    } else {
-      return null;
-    }
-  };
+  if (item.hashtags && item.hashtags.length > 0) {
+    return item.hashtags.map((hashtag, index) => (
+      <TouchableOpacity
+        key={index}
+        onPress={() => navigation.navigate("PostTag", { TagName: hashtag })}
+        style={styles.hashtagButton}
+      >
+        <Text style={styles.hashtagText}>{hashtag}</Text>
+      </TouchableOpacity>
+    ));
+  } else {
+    return null;
+  }
+};
+
 
   const renderCaption = () => {
     if (item.attachment) {
